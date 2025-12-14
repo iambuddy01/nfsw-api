@@ -4,12 +4,15 @@ import torch
 
 MODEL_NAME = "giacomoarienti/nsfw-classifier"
 
+device = torch.device("cpu")
+
 processor = AutoProcessor.from_pretrained(MODEL_NAME)
 model = AutoModelForImageClassification.from_pretrained(MODEL_NAME)
+model.to(device)
 model.eval()
 
 def scan_image(img: Image.Image):
-    inputs = processor(images=img, return_tensors="pt")
+    inputs = processor(images=img, return_tensors="pt").to(device)
 
     with torch.no_grad():
         outputs = model(**inputs)
@@ -22,3 +25,4 @@ def scan_image(img: Image.Image):
     safe = primary not in ["hentai", "porn", "sexy"]
 
     return primary, scores, safe
+
